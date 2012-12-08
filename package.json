@@ -1,6 +1,14 @@
 {
   "name": "wifli",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "author": "Forrest L Norvell <ogd@aoaioxxysz.net> (http://github.com/othiym23)",
+  "contributors": [
+    {
+      "name": "Jason Snell",
+      "email": "asm@syne.net",
+      "url": "http://syne.net/"
+    }
+  ],
   "description": "Simple API for WiFli programmable helicopters.",
   "main": "index.js",
   "scripts": {
@@ -16,6 +24,5 @@
     "hardware",
     "helicopter"
   ],
-  "author": "Forrest L Norvell <ogd@aoaioxxysz.net> (http://github.com/othiym23)",
   "license": "BSD"
 }
