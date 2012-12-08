@@ -1,0 +1,21 @@
+{
+  "name": "wifli",
+  "version": "0.1.0",
+  "description": "Simple API for WiFli programmable helicopters.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/othiym23/node-wifli.git"
+  },
+  "keywords": [
+    "drone-overlords",
+    "wifli",
+    "hardware",
+    "helicopter"
+  ],
+  "author": "Forrest L Norvell <ogd@aoaioxxysz.net> (http://github.com/othiym23)",
+  "license": "BSD"
+}
