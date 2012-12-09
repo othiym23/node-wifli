@@ -11,9 +11,10 @@ var path         = require('path')
 /*
  * CONSTANTS
  */
-var HELIADDRESS = '192.168.11.123'
-  , HELIPORT    = 2000
-  , HOVER_SPEED = 30 // FIXME: SWAG
+var HELIADDRESS  = '192.168.11.123'
+  , HELIPORT     = 2000
+  , HOVER_SPEED  = 30 // FIXME: SWAG, varies with charge
+  , DEFAULT_TRIM = 0  // FIXME: SWAG, varies with helicopter load
   ;
 
 function dumpResponse(response) {
@@ -35,6 +36,7 @@ function WiFli (options) {
 
   if (!options) options = {};
   this.hoverSpeed = options.hoverSpeed || HOVER_SPEED;
+  this.trim = options.trim || DEFAULT_TRIM;
 
   // make it easy to stream commands to copter
   this.on('data', function (command) {
@@ -98,6 +100,9 @@ WiFli.prototype.sendCommand = function (command) {
     return this.land();
   }
   else {
+    // need to prevent precession
+    if (!command.hasOwnProperty('trim')) command.trim = this.trim;
+
     var b = new Command(command).toBuffer();
     this.emit('sent', command);
     this.connection.write(b);
