@@ -29,5 +29,8 @@
     "helicopter",
     "nodecopter"
   ],
-  "license": "BSD"
+  "license": "BSD",
+  "devDependencies": {
+    "tap": "~0.3.3"
+  }
 }

@@ -5,11 +5,6 @@ var Queue        = require('../lib/queue')
   , WiFli        = require('../index')
   ;
 
-var mockConnection = {
-  connection : new EventEmitter(),
-  sendCommand : function (command) { console.dir(command); }
-};
-
 var kopter = new WiFli();
 kopter.connect(function () {
   var tq = new Queue(kopter);
