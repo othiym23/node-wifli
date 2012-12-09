@@ -1,7 +1,11 @@
 {
   "name": "wifli",
   "version": "0.1.1",
-  "author": "Forrest L Norvell <ogd@aoaioxxysz.net> (http://github.com/othiym23)",
+  "author": {
+    "name": "Forrest L Norvell",
+    "email": "ogd@aoaioxxysz.net>",
+    "url": "http://github.com/othiym23"
+  },
   "contributors": [
     {
       "name": "Jason Snell",
@@ -9,7 +13,7 @@
       "url": "http://syne.net/"
     }
   ],
-  "description": "Simple API for WiFli programmable helicopters.",
+  "description": "Simple API for WiFli programmable helicopters. Nodecopter for the common (read: cheap) hacker.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,7 +26,8 @@
     "drone-overlords",
     "wifli",
     "hardware",
-    "helicopter"
+    "helicopter",
+    "nodecopter"
   ],
   "license": "BSD"
 }
