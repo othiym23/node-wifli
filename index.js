@@ -11,8 +11,9 @@ var path         = require('path')
 /*
  * CONSTANTS
  */
-var HELIADDRESS    = '192.168.11.123'
-  , HELIPORT       = 2000
+var HELIADDRESS = '192.168.11.123'
+  , HELIPORT    = 2000
+  , HOVER_SPEED = 30 // FIXME: SWAG
   ;
 
 function dumpResponse(response) {
@@ -28,9 +29,12 @@ function dumpResponse(response) {
   }
 }
 
-function WiFli () {
+function WiFli (options) {
   EventEmitter.call(this);
   this.writable = true;
+
+  if (!options) options = {};
+  this.hoverSpeed = options.hoverSpeed || HOVER_SPEED;
 
   // make it easy to stream commands to copter
   this.on('data', function (command) {
@@ -82,8 +86,16 @@ WiFli.prototype.sendCommand = function (command) {
   if (!command) command = {};
 
   if (command.reset) {
-    this.sendReset();
-    return true;
+    return this.sendReset();
+  }
+  else if (command.hover) {
+    return this.hover(command);
+  }
+  else if (command.launch) {
+    return this.launch();
+  }
+  else if (command.land) {
+    return this.land();
   }
   else {
     var b = new Command(command).toBuffer();
@@ -110,8 +122,45 @@ WiFli.prototype.destroy = function () {
 };
 
 WiFli.prototype.sendReset = function () {
-  this.sendCommand();
+  var status = this.sendCommand();
   this.emit('reset');
+  return status;
+};
+
+WiFli.prototype.hover = function (command) {
+  if (command) {
+    delete command.hover;
+  }
+  else {
+    command = {};
+  }
+  command.rotorSpeed = this.hoverSpeed;
+
+  this.sendCommand(command);
+  this.emit('hover');
+};
+
+WiFli.prototype.launch = function () {
+  var self = this;
+  var launchSpeed = Math.floor(this.hoverSpeed * 1.1);
+  this.runQueue(function (q) {
+    q.once('end', function () { self.emit('launch'); });
+    q.enqueue({rotorSpeed : launchSpeed}, 1000);
+    q.enqueue({hover : true}, 0);
+  });
+};
+
+WiFli.prototype.land = function () {
+  var self = this;
+  Math.floor(self.hoverSpeed * 1.1);
+  this.runQueue(function (q) {
+    q.once('end', function () { self.emit('land'); });
+
+    q.enqueue({rotorSpeed : Math.floor(self.hoverSpeed * 0.8)},   400);
+    q.enqueue({rotorSpeed : Math.floor(self.hoverSpeed * 0.95)}, 1000);
+    q.enqueue({hover : true},                                     300);
+    q.enqueue({reset : true}, 0);
+  });
 };
 
 module.exports = WiFli;

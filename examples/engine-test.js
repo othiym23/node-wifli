@@ -1,17 +1,9 @@
 'use strict';
 
-var WiFli = require('../index');
+var WiFli          = require('../index')
+  , MockConnection = require('../lib/mock-connection')
+  ;
 
-function MockConnection() {
-}
-
-MockConnection.prototype.write = function (buffer) {
-  console.dir(buffer);
-};
-
-MockConnection.prototype.end = function () {
-  console.log('connection shut down');
-};
 
 var kopter = new WiFli();
 // replace this with a real connect() call to send to real copter

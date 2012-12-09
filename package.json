@@ -16,7 +16,7 @@
   "description": "Simple API for WiFli programmable helicopters. Nodecopter for the common (read: cheap) hacker.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap test"
   },
   "repository": {
     "type": "git",
