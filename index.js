@@ -71,7 +71,7 @@ WiFli.prototype.connect = function (callback) {
   });
   this.connection.on('error', function (error) {
     this.emit('error', error);
-  });
+  }.bind(this));
 
   if (callback) this.connection.on('connect', callback);
 };
