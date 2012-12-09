@@ -139,12 +139,14 @@ WiFli.prototype.hover = function (command) {
   this.emit('hover');
 };
 
-WiFli.prototype.launch = function () {
+WiFli.prototype.launch = function (duration) {
+  if (!duration) duration = 1000;
+
   var self = this;
-  var launchSpeed = Math.floor(this.hoverSpeed * 1.1);
   this.runQueue(function (q) {
     q.once('end', function () { self.emit('launch'); });
-    q.enqueue({rotorSpeed : launchSpeed}, 1000);
+
+    q.enqueue({rotorSpeed : Math.floor(self.hoverSpeed * 1.2)}, duration);
     q.enqueue({hover : true}, 0);
   });
 };
