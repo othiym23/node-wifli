@@ -53,6 +53,10 @@ function WiFli (options) {
   this.on('sent', function (command) {
     console.log("sending command: %j", command);
   });
+
+  this.once('end', function () {
+    console.log("WiFli shut down.");
+  });
 }
 util.inherits(WiFli, EventEmitter);
 
