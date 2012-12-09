@@ -46,7 +46,7 @@ function WiFli (options) {
   this.on('error', function (error) {
     console.error("something bad happened, trying to reset WiFli before bailing out.");
     console.error(error);
-    this.sendReset();
+    this.end();
   }.bind(this));
 
   // TODO: may make this optional
