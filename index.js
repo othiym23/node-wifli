@@ -93,12 +93,6 @@ WiFli.prototype.sendCommand = function (command) {
   else if (command.hover) {
     return this.hover(command);
   }
-  else if (command.launch) {
-    return this.launch();
-  }
-  else if (command.land) {
-    return this.land();
-  }
   else {
     // need to prevent precession
     if (!command.hasOwnProperty('trim')) command.trim = this.trim;
