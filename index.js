@@ -15,7 +15,8 @@ var HELIADDRESS    = '192.168.11.123'
 function dumpResponse(response) {
   if (response.readUInt8(0) !== 0xee ||
       response.readUInt8(1) !== 0x64 ||
-      response.readUInt8(8) !== 0xbb) {
+      (response.readUInt8(8) !== 0xbb &&
+       response.readUInt8(8) !== 0xdd)) {
     console.error("unexepected data from WiFli");
     console.dir(response);
   }
@@ -29,18 +30,22 @@ function WiFli () {
 
 WiFli.prototype.connect = function (callback) {
   this.connection = net.connect(HELIPORT, HELIADDRESS);
-  this.on('data', dumpResponse);
-  this.on('connect', function () {
+  this.connection.on('data', dumpResponse);
+  this.connection.on('connect', function () {
     console.log('connected to WiFli');
   });
 
-  if (callback) this.on('connect', callback);
+  if (callback) this.connection.on('connect', callback);
 };
 
 WiFli.prototype.sendCommand = function (command) {
-  this.connection.write(new Command(command));
+  var b = new Command(command).toBuffer();
+  console.log("sending command: %j", command);
+  this.connection.write(b);
 };
 
 WiFli.prototype.sendReset = function () {
   this.sendCommand();
 };
+
+module.exports = WiFli;
