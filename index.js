@@ -79,11 +79,19 @@ WiFli.prototype.runQueue = function (callback) {
 WiFli.prototype.sendCommand = function (command) {
   if (!this.connection) return console.error("Attempted to send commands before connection!");
   if (!this.writable) return console.error("Attempted to write to closed command channel");
+  if (!command) command = {};
 
-  var b = new Command(command).toBuffer();
-  this.emit('sent', command);
+  if (command.reset) {
+    this.sendReset();
+    return true;
+  }
+  else {
+    var b = new Command(command).toBuffer();
+    this.emit('sent', command);
+    this.connection.write(b);
 
-  return true;
+    return true;
+  }
 };
 
 WiFli.prototype.end = function (command) {
