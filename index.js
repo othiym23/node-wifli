@@ -151,15 +151,16 @@ WiFli.prototype.launch = function (duration) {
   });
 };
 
-WiFli.prototype.land = function () {
+WiFli.prototype.land = function (duration) {
+  if (!duration) duration = 1000;
+
   var self = this;
-  Math.floor(self.hoverSpeed * 1.1);
   this.runQueue(function (q) {
     q.once('end', function () { self.emit('land'); });
 
-    q.enqueue({rotorSpeed : Math.floor(self.hoverSpeed * 0.8)},   400);
-    q.enqueue({rotorSpeed : Math.floor(self.hoverSpeed * 0.95)}, 1000);
-    q.enqueue({hover : true},                                     300);
+    q.enqueue({rotorSpeed : Math.floor(self.hoverSpeed * 0.8)},   duration * 0.3);
+    q.enqueue({hover : true},                                     duration * 0.3);
+    q.enqueue({rotorSpeed : Math.floor(self.hoverSpeed * 0.95)},  duration * 0.4);
     q.enqueue({reset : true}, 0);
   });
 };
