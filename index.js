@@ -13,21 +13,19 @@ var path         = require('path')
  */
 var HELIADDRESS  = '192.168.11.123'
   , HELIPORT     = 2000
-  , HOVER_SPEED  = 30 // FIXME: SWAG, varies with charge
+  , HOVER_BASE   = 20 // FIXME: SWAG, varies with charge
+  , START_CHARGE = 80 // in percent, 0-100, reported by copter
   , DEFAULT_TRIM = 0  // FIXME: SWAG, varies with helicopter load
   ;
 
-function dumpResponse(response) {
-  if (response.readUInt8(0) !== 0xee ||
-      response.readUInt8(1) !== 0x64 ||
-      !(response.readUInt8(8) === 0xbb ||
-        response.readUInt8(8) === 0xdd)) {
-    console.error("unexepected data from WiFli");
-    console.dir(response);
-  }
-  else {
-    console.log("helicopter battery level: %d", response.readUInt8(4));
-  }
+/**
+ * I don't trust this heuristic any further than I can throw it; the
+ * relationship probably isn't linear, but only painstaking experimentation
+ * will come up with the correct polynomial and I had like two hours to
+ * write this whole module.
+ */
+function calculateHoverSpeed(base, charge) {
+  return base + (100 - charge) * 0.4;
 }
 
 /**
@@ -42,8 +40,9 @@ function WiFli (options) {
   this.writable = true;
 
   if (!options) options = {};
-  this.hoverSpeed = options.hoverSpeed || HOVER_SPEED;
-  this.trim = options.trim || DEFAULT_TRIM;
+  this.hoverSpeed = options.hoverSpeed || HOVER_BASE;
+  this.trim       = options.trim       || DEFAULT_TRIM;
+  this.charge     = options.charge     || START_CHARGE;
 
   // make it easy to stream commands to copter
   this.on('data', function (command) {
@@ -67,6 +66,21 @@ function WiFli (options) {
 }
 util.inherits(WiFli, EventEmitter);
 
+WiFli.prototype.dumpResponse = function (response) {
+  if (response.readUInt8(0) !== 0xee ||
+      response.readUInt8(1) !== 0x64 ||
+      !(response.readUInt8(8) === 0xbb ||
+        response.readUInt8(8) === 0xdd)) {
+    console.error("unexepected data from WiFli");
+    console.dir(response);
+  }
+  else {
+    var charge = response.readUInt9(4);
+    console.log("helicopter battery level: %d", charge);
+    this.charge = charge;
+  }
+};
+
 /**
  * Establish the network connection to the Wi-Fli. Assumes you're already on
  * the correct SSID for the helicopter, which will look something like
@@ -79,7 +93,7 @@ WiFli.prototype.connect = function (callback) {
   this.connection = net.connect(HELIPORT, HELIADDRESS);
 
   // Do something sensible by default.
-  this.connection.on('data', dumpResponse);
+  this.connection.on('data', this.dumpResponse.bind(this));
   this.connection.on('connect', function () {
     console.log("connected to WiFli");
     this.emit('ready');
@@ -193,7 +207,7 @@ WiFli.prototype.hover = function (command) {
   else {
     command = {};
   }
-  command.rotorSpeed = this.hoverSpeed;
+  command.rotorSpeed = calculateHoverSpeed(this.hoverSpeed, this.charge);
 
   this.sendCommand(command);
   this.emit('hover');
@@ -209,10 +223,11 @@ WiFli.prototype.launch = function (duration) {
   if (!duration) duration = 1000;
 
   var self = this;
+  var currentHover = calculateHoverSpeed(this.hoverSpeed, this.charge);
   this.runQueue(function (q) {
     q.once('end', function () { self.emit('launch'); });
 
-    q.enqueue({rotorSpeed : Math.floor(self.hoverSpeed * 1.2)}, duration);
+    q.enqueue({rotorSpeed : Math.floor(currentHover * 1.2)}, duration);
     q.enqueue({hover : true}, 0);
   });
 };
@@ -228,12 +243,13 @@ WiFli.prototype.land = function (duration) {
   if (!duration) duration = 1000;
 
   var self = this;
+  var currentHover = calculateHoverSpeed(this.hoverSpeed, this.charge);
   this.runQueue(function (q) {
     q.once('end', function () { self.emit('land'); });
 
-    q.enqueue({rotorSpeed : Math.floor(self.hoverSpeed * 0.8)},   duration * 0.3);
+    q.enqueue({rotorSpeed : Math.floor(currentHover * 0.8)},   duration * 0.3);
     q.enqueue({hover : true},                                     duration * 0.3);
-    q.enqueue({rotorSpeed : Math.floor(self.hoverSpeed * 0.95)},  duration * 0.4);
+    q.enqueue({rotorSpeed : Math.floor(currentHover * 0.95)},  duration * 0.4);
     q.enqueue({reset : true}, 0);
   });
 };
