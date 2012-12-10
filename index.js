@@ -247,9 +247,9 @@ WiFli.prototype.land = function (duration) {
   this.runQueue(function (q) {
     q.once('end', function () { self.emit('land'); });
 
-    q.enqueue({rotorSpeed : Math.floor(currentHover * 0.8)},   duration * 0.3);
-    q.enqueue({hover : true},                                     duration * 0.3);
-    q.enqueue({rotorSpeed : Math.floor(currentHover * 0.95)},  duration * 0.4);
+    q.enqueue({rotorSpeed : Math.floor(currentHover * 0.8)},  duration * 0.3);
+    q.enqueue({hover : true},                                 duration * 0.3);
+    q.enqueue({rotorSpeed : Math.floor(currentHover * 0.95)}, duration * 0.4);
     q.enqueue({reset : true}, 0);
   });
 };
