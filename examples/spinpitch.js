@@ -8,6 +8,6 @@ kontroller.connect(function () {
 
   setTimeout(function () {
     kontroller.sendReset();
-    kontroller.connection.end();
+    kontroller.end();
   }, 1000);
 });

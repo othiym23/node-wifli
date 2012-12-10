@@ -4,7 +4,8 @@ var WiFli          = require('../index')
   , MockConnection = require('../lib/mock-connection')
   ;
 
-var kopter = new WiFli({hoverSpeed : 65, trim : -5});
+var kopter = new WiFli({hoverSpeed : 48, trim : -5});
+
 // replace this with a real connect() call to send to real copter
 kopter.connection = new MockConnection();
 
