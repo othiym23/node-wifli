@@ -133,12 +133,12 @@ kopter.on('ready', function () {
 
     j.on('vertical', function (value) {
       pitch += value;
-      e(k, speed, pitch, yaw);
+      e(kopter, speed, pitch, yaw);
     });
 
     j.on('horizontal', function (value) {
       yaw += value;
-      e(k, speed, pitch, yaw);
+      e(kopter, speed, pitch, yaw);
     });
 
     j.on('throttle', function (value) {
