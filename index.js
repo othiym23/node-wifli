@@ -69,7 +69,8 @@ WiFli.prototype.connect = function (callback) {
   this.connection.on('data', dumpResponse);
   this.connection.on('connect', function () {
     console.log("connected to WiFli");
-  });
+    this.emit('ready');
+  }.bind(this));
   this.connection.on('end', function () {
     console.log("control channel to WiFli closed.");
   });
@@ -77,7 +78,7 @@ WiFli.prototype.connect = function (callback) {
     this.emit('error', error);
   }.bind(this));
 
-  if (callback) this.connection.on('connect', callback);
+  if (callback) this.connection.once('connect', callback);
 };
 
 WiFli.prototype.runQueue = function (callback) {
