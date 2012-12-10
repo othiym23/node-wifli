@@ -122,7 +122,7 @@ control events directly onto the copter once it's connected:
 var kopter = new WiFli();
 
 function e(k, r, p, y) {
-  k.emit({rotorSpeed : r, pitch : p, yaw : y});
+  k.emit('data', {rotorSpeed : r, pitch : p, yaw : y});
 }
 
 kopter.on('ready', function () {
