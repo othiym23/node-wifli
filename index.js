@@ -75,7 +75,7 @@ WiFli.prototype.dumpResponse = function (response) {
     console.dir(response);
   }
   else {
-    var charge = response.readUInt9(4);
+    var charge = response.readUInt8(4);
     console.log("helicopter battery level: %d", charge);
     this.charge = charge;
   }
